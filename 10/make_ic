@@ -1,22 +1,19 @@
 #!/bin/bash
-#PBS -P x77
+#PBS -P tm70
 #PBS -q normal
-#PBS -l mem=64Gb
-#PBS -l walltime=2:00:00
+#PBS -l mem=128Gb
+#PBS -l walltime=24:00:00
 #PBS -l jobfs=400GB
-#PBS -l ncpus=8
+#PBS -l ncpus=1
 #PBS -l wd
-#PBS -lstorage=gdata/hh5+gdata/ik11
+#PBS -lstorage=gdata/hh5+gdata/ik11+gdata/tm70+scratch/tm70+gdata/vk83
 
 module purge
 module use /g/data/hh5/public/modules
-module load conda/analysis3
+module load conda/analysis3-22.04
 module load esmf
 #module load openmpi/4.0.2
 
-#GRIDDIR='/g/data/ua8/MOM/grids/10'
-#ln -sf $GRIDDIR/mosaic/ocean_hgrid.nc ocean_hgrid.nc
-#ln -sf $GRIDDIR/topog/GFDL50/ocean_vgrid.nc ocean_vgrid.nc
 GRIDDIR='/g/data/ik11/inputs/access-om2/input_20201022/mom_1deg'
 ln -sf $GRIDDIR/ocean_hgrid.nc ocean_hgrid.nc
 ln -sf $GRIDDIR/ocean_vgrid.nc ocean_vgrid.nc
@@ -32,6 +29,8 @@ ln -sf /g/data/ik11/inputs/access-om2/woa13/monthly/woa13_decav_ts_"${mon}"_04v2
 
 #md5sum -c md5sum.txt || exit
 
-mkdir -p /g/data/ik11/inputs/access-om2/woa13/10
-makeic.py --use_mpi WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc /g/data/ik11/inputs/access-om2/woa13/10/woa13_ts_"${mon}"_mom10.nc
+WRITEDIR='/g/data/ik11/inputs/access-om2/woa13/10'
+mkdir -p $WRITEDIR
+
+makeic.py WOA input.nc input.nc input.nc input.nc MOM ocean_hgrid.nc ocean_vgrid.nc "$WRITEDIR"/woa13_ts_"${mon}"_mom10.nc
 done
